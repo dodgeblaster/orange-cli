@@ -14,7 +14,7 @@ A command-line interface for interacting with AI models through a chat interface
 ## Installation
 
 ```bash
-npm i -g orange-cli
+npm i -g @orangeteam/cli
 ```
 
 ## Usage
