@@ -73,18 +73,58 @@ function prompt({success, fail}) {
  */
 addCommand({
     command: 'chat',
-    action: async () => {
+    action: async (options = {}) => {
         console.log('Welcome to orange cli')
         console.log(makeDimText('Starting up....'))
         let timer = 0;
         
+        // Get model from options or use default
+        let modelId = micro; // Default model
+        
+        if (options.model) {
+            switch(options.model.toLowerCase()) {
+                case 'premier':
+                    modelId = premier;
+                    console.log(makeDimText(`Using Nova Premier model`));
+                    break;
+                case 'micro':
+                    modelId = micro;
+                    console.log(makeDimText(`Using Nova Micro model`));
+                    break;
+                case 'lite':
+                    modelId = lite;
+                    console.log(makeDimText(`Using Nova Lite model`));
+                    break;
+                case 'claude-3-5':
+                case 'claude35':
+                case 's35':
+                    modelId = s35;
+                    console.log(makeDimText(`Using Claude 3.5 Sonnet model`));
+                    break;
+                case 'claude-3-7':
+                case 'claude37':
+                case 's37':
+                    modelId = s37;
+                    console.log(makeDimText(`Using Claude 3.7 Sonnet model`));
+                    break;
+                case 'claude-3':
+                case 'claude3':
+                case 's0':
+                    modelId = s0;
+                    console.log(makeDimText(`Using Claude 3 Sonnet model`));
+                    break;
+                default:
+                    console.log(makeRedText(`Unknown model: ${options.model}, using default Nova Micro`));
+                    break;
+            }
+        }
 
         // Get context before creating the agent
         const context = await getContext();
 
         const llm = createLLM({
             region: 'us-east-1',
-            modelId: micro,
+            modelId: modelId,
             provider: 'bedrock'
         });
         
@@ -109,7 +149,9 @@ addCommand({
             },
             
             assistantReceive: (event) => {
-                print(event.content);
+                // Remove any content between <thinking> tags
+                const filteredContent = event.content.replace(/<thinking>[\s\S]*?<\/thinking>/g, '');
+                print(filteredContent);
             },
             
             toolStart: (event) => {

@@ -112,11 +112,11 @@ export function endLoadingMessage() {
  * CLI Functions
  */
 function command(fn) {
-    return async () => {
+    return async (options) => {
         hideCursor()
         clear()
         try {
-            await fn()
+            await fn(options)
             showCursor()
         } catch (e) {
             console.log(e)
@@ -133,11 +133,33 @@ export function addCommand(config) {
     program[config.command] = command(config.action)
 }
 
+export function parseArgs(args) {
+    const command = args[0];
+    const options = {};
+    
+    for (let i = 1; i < args.length; i++) {
+        if (args[i].startsWith('--')) {
+            const option = args[i].slice(2);
+            if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
+                options[option] = args[i + 1];
+                i++; // Skip the next argument as it's the value
+            } else {
+                options[option] = true; // Flag without value
+            }
+        }
+    }
+    
+    return { command, options };
+}
+
 export function runProgram() {
-    const args = process.argv.slice(2)
-    if (program[args[0]]) {
-        program[args[0]]()
+    const args = process.argv.slice(2);
+    const { command, options } = parseArgs(args);
+
+
+    if (program[command]) {
+        program[command](options);
     } else {
-        console.log('Command not found')
+        console.log('Command not found');
     }
 }
