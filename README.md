@@ -25,6 +25,20 @@ Start a chat session:
 orange-cli chat
 ```
 
+Specify a model to use:
+
+```bash
+orange-cli chat --model <model-name>
+```
+
+Available model options:
+- `premier` - Amazon Nova Premier
+- `micro` - Amazon Nova Micro (default)
+- `lite` - Amazon Nova Lite
+- `claude35` - Claude 3.5 Sonnet
+- `claude37` - Claude 3.7 Sonnet
+- `claude3`- Claude 3 Sonnet
+
 ### Available Commands
 
 - `/quit` - Exit the chat session
